@@ -16,7 +16,7 @@
             --white: #ffffff;
             --pastel-red: #ffb3b3;
             --pastel-gray: #d3d3d3;
-            --pastel-green: #b3ffb3;
+            --pastel-green: #b3ffb3; /* Zelena za srečanja */
             --shadow: 0 4px 6px rgba(0,0,0,0.1);
             --radius: 12px;
         }
@@ -26,15 +26,15 @@
         body { margin: 0; padding: 0; background-color: var(--bg); color: var(--text); }
 
         /* --- Layout & Utilities --- */
-        .container { max-width: 800px; margin: 0 auto; padding: 20px; min-height: 100vh; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; min-height: 100vh; padding-bottom: 80px; }
         .hidden { display: none !important; }
         .text-center { text-align: center; }
         .bold { font-weight: bold; }
         .flex { display: flex; gap: 10px; align-items: center; }
-        .flex-col { flex-direction: column; }
         .space-between { justify-content: space-between; }
         .w-100 { width: 100%; }
         .mt-2 { margin-top: 20px; }
+        .text-muted { color: #777; font-size: 0.9em; }
         
         h1, h2, h3 { margin-top: 0; color: var(--primary-dark); }
 
@@ -48,6 +48,7 @@
         .btn-primary { background-color: var(--primary); color: var(--white); }
         .btn-danger { background-color: var(--danger); color: var(--white); }
         .btn-secondary { background-color: var(--secondary); color: var(--white); }
+        .btn-success { background-color: var(--success); color: var(--white); }
         .btn-neutral { background-color: #95a5a6; color: white; }
         .btn-block { width: 100%; display: block; margin-bottom: 10px; }
 
@@ -77,15 +78,13 @@
         .modal-content {
             background: var(--white); padding: 25px; border-radius: var(--radius);
             width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            animation: slideUp 0.3s ease; max-height: 90vh; overflow-y: auto;
+            animation: slideUp 0.3s ease; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column;
         }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         /* --- Specific Views --- */
-        /* Login */
         #login-view { display: flex; flex-direction: column; justify-content: center; height: 90vh; }
         
-        /* Menu Grid */
         .menu-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
         @media (min-width: 600px) { .menu-grid { grid-template-columns: repeat(2, 1fr); } }
 
@@ -94,8 +93,11 @@
         .calendar-cell {
             background: var(--white); padding: 15px; border-radius: var(--radius);
             text-align: center; cursor: pointer; border: 2px solid #eee; font-weight: bold;
+            transition: background-color 0.3s;
         }
         .calendar-cell:hover { border-color: var(--primary); }
+        
+        /* Barve celic */
         .status-meeting { background-color: var(--pastel-green) !important; border-color: var(--success); }
         .status-cancelled { background-color: var(--pastel-red) !important; border-color: var(--danger); }
         .status-holiday { background-color: var(--pastel-gray) !important; border-color: #777; }
@@ -106,23 +108,9 @@
             display: flex; justify-content: space-between; align-items: center;
             padding: 10px; border-bottom: 1px solid #eee; animation: fadeIn 0.2s;
         }
-        .attendee-name { font-weight: bold; cursor: pointer; color: var(--danger); }
-        .attendee-name:hover { text-decoration: line-through; }
-        .attendee-note-btn { cursor: pointer; font-size: 1.2em; color: var(--secondary); }
-
-        /* Tables (Desktop view mainly, transformed on mobile) */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
-        
-        /* Mobile adjustments for tables */
-        @media (max-width: 600px) {
-            .desktop-table { display: none; }
-            .mobile-list { display: block; }
-        }
-        @media (min-width: 601px) {
-            .desktop-table { display: table; }
-            .mobile-list { display: none; }
-        }
+        .attendee-name { font-weight: bold; cursor: pointer; color: var(--text); }
+        .attendee-name:hover { text-decoration: line-through; color: var(--danger); }
+        .attendee-note-btn { cursor: pointer; font-size: 1.2em; margin-left: 10px; }
 
     </style>
 </head>
@@ -205,7 +193,7 @@
     </div>
 
     <script>
-        // --- DATA LAYER (LocalStorage Wrapper) ---
+        // --- DATA LAYER ---
         const DB = {
             init: () => {
                 if (!localStorage.getItem('eMladinska_users')) {
@@ -229,7 +217,7 @@
         const $ = (id) => document.getElementById(id);
         const generateId = () => Date.now().toString(36) + Math.random().toString(36).substr(2);
 
-        // --- CUSTOM MODAL SYSTEM (Crucial Requirement: No Browser Alerts) ---
+        // --- CUSTOM MODAL SYSTEM ---
         const Modal = {
             close: () => {
                 const el = $('modal-overlay');
@@ -251,7 +239,7 @@
                 overlay.innerHTML = `
                     <div class="modal-content">
                         <h3 class="text-center">${title}</h3>
-                        <div>${contentHTML}</div>
+                        <div style="flex:1; overflow-y:auto;">${contentHTML}</div>
                         <div class="mt-2">${btnsHTML}</div>
                     </div>
                 `;
@@ -293,7 +281,6 @@
         const App = {
             init: () => {
                 DB.init();
-                // Check if already logged in (session persistence simulation)
                 const savedUser = sessionStorage.getItem('currentUser');
                 if (savedUser) {
                     DB.currentUser = JSON.parse(savedUser);
@@ -327,14 +314,12 @@
             },
 
             router: (view) => {
-                // Hide all
                 ['login-view', 'home-view', 'profil-view', 'podatki-view', 'clani-view', 'arhiv-view', 'dnevnik-view'].forEach(v => $(v).classList.add('hidden'));
                 $('app-header').classList.add('hidden');
 
                 if (view === 'login') {
                     $('login-view').classList.remove('hidden');
                 } else {
-                    // Protected routes
                     $('app-header').classList.remove('hidden');
                     
                     if (view === 'home') {
@@ -344,7 +329,6 @@
                         Modules.Profile.load();
                         $('profil-view').classList.remove('hidden');
                     } else if (view === 'podatki') {
-                        // Admin Check
                         Modal.prompt('Varnostno preverjanje', 'Vpiši admin geslo', (val) => {
                             if (val === 'ADMIN') {
                                 Modules.Users.render();
@@ -370,7 +354,6 @@
         // --- MODULES ---
 
         const Modules = {
-            // 1. PROFIL
             Profile: {
                 load: () => {
                     const u = DB.currentUser;
@@ -395,7 +378,6 @@
                 }
             },
 
-            // 2. PODATKI (Users CRUD)
             Users: {
                 render: () => {
                     const users = DB.get('users');
@@ -409,9 +391,7 @@
                     });
                     $('users-list').innerHTML = html;
                 },
-                add: () => {
-                    Modules.Users.showForm({}, true);
-                },
+                add: () => { Modules.Users.showForm({}, true); },
                 edit: (id) => {
                     const user = DB.get('users').find(u => u.id == id);
                     Modules.Users.showForm(user, false);
@@ -427,7 +407,7 @@
                         { text: 'Shrani', onClick: () => Modules.Users.save(user.id, isNew) },
                         { text: 'Prekliči', style: 'btn-neutral' }
                     ];
-                    if (!isNew && user.username !== 'admin') { // Prevent deleting main admin logic if needed, or simple check
+                    if (!isNew && user.username !== 'admin') {
                         btns.push({ text: 'Izbriši', style: 'btn-danger', onClick: () => Modules.Users.delete(user.id) });
                     }
                     Modal.show(isNew ? 'Nov Uporabnik' : 'Uredi Uporabnika', html, btns);
@@ -441,14 +421,9 @@
                         username: $('u-user').value,
                         pass: $('u-pass').value
                     };
-                    
                     if(!newUser.name || !newUser.username || !newUser.pass) return Modal.alert('Vsa polja so obvezna.');
-
                     if (isNew) users.push(newUser);
-                    else {
-                        const idx = users.findIndex(u => u.id == id);
-                        users[idx] = newUser;
-                    }
+                    else users[users.findIndex(u => u.id == id)] = newUser;
                     DB.set('users', users);
                     Modules.Users.render();
                     Modal.close();
@@ -463,7 +438,6 @@
                 }
             },
 
-            // 3. ČLANI (Members CRUD + Stats)
             Members: {
                 render: () => {
                     const members = DB.get('members');
@@ -477,25 +451,18 @@
                     });
                     $('members-list').innerHTML = html || '<p class="text-center">Ni članov.</p>';
                 },
-                add: () => {
-                    Modules.Members.showForm({}, true);
-                },
+                add: () => { Modules.Members.showForm({}, true); },
                 details: (id) => {
-                    // Show stats + Edit option
                     const m = DB.get('members').find(x => x.id === id);
                     const meetings = DB.get('meetings');
-                    
-                    // Simple Stats: Count total attendance
-                    const presentCount = meetings.filter(mt => mt.attendees && mt.attendees.some(a => a.memberId === id)).length;
+                    const presentCount = meetings.filter(mt => mt.type === 'meeting' && mt.attendees && mt.attendees.some(a => a.memberId === id)).length;
                     
                     const html = `
                         <p><strong>Ime:</strong> ${m.name} ${m.surname}</p>
                         <p><strong>Vir:</strong> ${m.source}</p>
                         <hr>
                         <p class="text-center"><strong>Prisotnost:</strong> ${presentCount} x</p>
-                        <div class="text-center mt-2">
-                            <small>Za urejanje klikni spodaj</small>
-                        </div>
+                        <div class="text-center mt-2"><small>Za urejanje klikni spodaj</small></div>
                     `;
                     Modal.show('Podrobnosti člana', html, [
                         { text: 'Uredi podatke', onClick: () => Modules.Members.showForm(m, false) },
@@ -529,12 +496,8 @@
                         source: $('m-source').value
                     };
                     if(!newM.name) return Modal.alert('Ime je obvezno.');
-
                     if (isNew) list.push(newM);
-                    else {
-                        const idx = list.findIndex(x => x.id == id);
-                        list[idx] = newM;
-                    }
+                    else list[list.findIndex(x => x.id == id)] = newM;
                     DB.set('members', list);
                     Modules.Members.render();
                     Modal.close();
@@ -549,25 +512,23 @@
                 }
             },
 
-            // 4. DNEVNIK (Calendar Logic)
             Diary: {
-                tempMeeting: null, // Holds state while editing a meeting
+                tempMeeting: null,
+                
                 renderCalendar: () => {
                     const grid = $('calendar-grid');
                     grid.innerHTML = '';
                     const meetings = DB.get('meetings');
                     
-                    // Generate Fridays 2026
+                    // Datumi za 2026
                     let d = new Date('2026-01-01');
                     const end = new Date('2026-12-31');
                     
                     while (d <= end) {
-                        if (d.getDay() === 5) { // Friday
-                            const dateStr = d.toLocaleDateString('sl-SI'); // e.g., 7. 2. 2026
-                            // Clean dateStr for ID matching (remove spaces sometimes added by browsers)
+                        if (d.getDay() === 5) { // Petek
+                            const dateStr = d.toLocaleDateString('sl-SI');
                             const cleanDateStr = dateStr.replace(/\s/g, ''); 
                             
-                            // Find existing status
                             const m = meetings.find(x => x.date === cleanDateStr);
                             let statusClass = '';
                             if (m) {
@@ -579,21 +540,31 @@
                             const cell = document.createElement('div');
                             cell.className = `calendar-cell ${statusClass}`;
                             cell.innerText = dateStr;
+                            // Da se izognemo težavam s scope-om, passamo direktno
                             cell.onclick = () => Modules.Diary.handleCellClick(cleanDateStr, m);
                             grid.appendChild(cell);
                         }
                         d.setDate(d.getDate() + 1);
                     }
                 },
-                handleCellClick: (dateStr, existingMeeting) => {
+
+                handleCellClick: (dateStr, existing) => {
+                    // POPRAVEK: Če je že srečanje, odpri direktno urejanje
+                    if (existing && existing.type === 'meeting') {
+                        Modules.Diary.openMeetingForm(dateStr, existing);
+                        return;
+                    }
+
                     const html = `<p class="text-center">Datum: ${dateStr}</p>`;
+                    // Gumb za zabeleženje srečanja - kličemo openMeetingForm z null za obstoječe (ker je novo)
                     Modal.show('Izberi akcijo', html, [
-                        { text: 'Zabeleži srečanje', onClick: () => Modules.Diary.openMeetingForm(dateStr, existingMeeting) },
+                        { text: 'Zabeleži srečanje', onClick: () => Modules.Diary.openMeetingForm(dateStr, null) },
                         { text: 'Odpovej srečanje', style: 'btn-danger', onClick: () => Modules.Diary.setStatus(dateStr, 'cancelled') },
                         { text: 'Počitnice / Prosto', style: 'btn-neutral', onClick: () => Modules.Diary.setStatus(dateStr, 'holiday') },
                         { text: 'Zapri', style: 'btn-secondary', close: true }
                     ]);
                 },
+
                 setStatus: (dateStr, type) => {
                     let meetings = DB.get('meetings');
                     const idx = meetings.findIndex(m => m.date === dateStr);
@@ -612,8 +583,9 @@
                     Modules.Diary.renderCalendar();
                     Modal.close();
                 },
+
                 openMeetingForm: (dateStr, existing) => {
-                    // Initialize Temp Object
+                    // Inicializacija temp objekta
                     Modules.Diary.tempMeeting = existing ? JSON.parse(JSON.stringify(existing)) : {
                         date: dateStr,
                         type: 'meeting',
@@ -622,75 +594,79 @@
                         notes: ''
                     };
 
-                    const renderForm = () => {
-                        // Dynamic rendering of the "Window: Zabeleži srečanje"
-                        const tm = Modules.Diary.tempMeeting;
-                        
-                        // Attendees HTML
-                        let attHtml = '';
-                        if(tm.attendees.length === 0) attHtml = '<div class="text-center text-muted">Seznam je prazen</div>';
-                        else {
-                            tm.attendees.forEach((att, idx) => {
-                                attHtml += `
-                                <div class="attendee-row">
-                                    <span class="attendee-name" onclick="Modules.Diary.removeAttendee(${idx})">${att.name}</span>
-                                    <div class="flex">
-                                        ${att.note ? '<small>📝</small>' : ''}
-                                        <span class="attendee-note-btn" onclick="Modules.Diary.addNoteToAttendee(${idx})">✏️</span>
-                                    </div>
-                                </div>`;
-                            });
-                        }
-
-                        const lastMod = existing ? `<small>Zadnja sprememba: ${existing.lastModBy} (${existing.lastModDate})</small>` : '';
-
-                        const html = `
-                            <div style="max-height: 60vh; overflow-y: auto;">
-                                <p><strong>Datum:</strong> ${tm.date}</p>
-                                <label>Prisotni:</label>
-                                <div class="attendees-list" id="att-list-container">${attHtml}</div>
-                                
-                                <label>Vsebina srečanja:</label>
-                                <textarea id="meet-content" rows="3">${tm.content}</textarea>
-                                
-                                <label>Opombe:</label>
-                                <textarea id="meet-notes" rows="2">${tm.notes}</textarea>
-                                
-                                <div class="mt-2 text-center text-muted">${lastMod}</div>
-                            </div>
-                            
-                            <div class="flex space-between mt-2">
-                                <button class="btn-secondary" onclick="Modal.close()">Zapri</button>
-                                <button class="btn-primary" onclick="Modules.Diary.showMemberPicker()">+ Člani</button>
-                                <button class="btn-success" onclick="Modules.Diary.saveMeeting()">Shrani</button>
-                            </div>
-                        `;
-                        
-                        // We override the default Modal buttons with empty array because we built custom buttons inside HTML
-                        Modal.show('Zabeleži srečanje', html, []);
-                        
-                        // Bind inputs to temp object on change
-                        $('meet-content').oninput = (e) => Modules.Diary.tempMeeting.content = e.target.value;
-                        $('meet-notes').oninput = (e) => Modules.Diary.tempMeeting.notes = e.target.value;
-                    };
-                    renderForm();
-                    Modules.Diary.rerenderForm = renderForm; // Save ref to re-render after adding member
+                    Modules.Diary.rerenderForm();
                 },
+
+                rerenderForm: () => {
+                    const tm = Modules.Diary.tempMeeting;
+                    
+                    // Render prisotnih
+                    let attHtml = '';
+                    if(!tm.attendees || tm.attendees.length === 0) attHtml = '<div class="text-center text-muted">Seznam je prazen</div>';
+                    else {
+                        tm.attendees.forEach((att, idx) => {
+                            attHtml += `
+                            <div class="attendee-row">
+                                <span class="attendee-name" onclick="Modules.Diary.removeAttendee(${idx})">${att.name}</span>
+                                <div class="flex">
+                                    ${att.note ? '<small>📝</small>' : ''}
+                                    <span class="attendee-note-btn" onclick="Modules.Diary.addNoteToAttendee(${idx})">✏️</span>
+                                </div>
+                            </div>`;
+                        });
+                    }
+
+                    const lastMod = tm.lastModBy ? `<small>Zadnja sprememba: ${tm.lastModBy} (${tm.lastModDate})</small>` : '';
+
+                    const html = `
+                        <div>
+                            <p class="text-center bold" style="margin-bottom:10px;">Datum: ${tm.date}</p>
+                            
+                            <label class="bold">Prisotni:</label>
+                            <div class="attendees-list" id="att-list-container">${attHtml}</div>
+                            
+                            <label class="bold">Vsebina srečanja:</label>
+                            <textarea id="meet-content" rows="3">${tm.content || ''}</textarea>
+                            
+                            <label class="bold">Opombe:</label>
+                            <textarea id="meet-notes" rows="2">${tm.notes || ''}</textarea>
+                            
+                            <div class="mt-2 text-center text-muted">${lastMod}</div>
+                        </div>
+                        
+                        <div class="flex space-between mt-2" style="border-top:1px solid #eee; padding-top:10px;">
+                            <button class="btn-secondary" onclick="Modal.close()">Zapri</button>
+                            <button class="btn-primary" onclick="Modules.Diary.showMemberPicker()">+ Člani</button>
+                            <button class="btn-success" onclick="Modules.Diary.saveMeeting()">Shrani</button>
+                        </div>
+                    `;
+                    
+                    // Prikažemo modal, a brez spodnjih gumbov (ker so v HTMLju zgoraj)
+                    Modal.show('Zabeleži srečanje', html, []);
+
+                    // Bindamo inpute, da se stanje ohrani
+                    setTimeout(() => {
+                        const cBox = $('meet-content');
+                        const nBox = $('meet-notes');
+                        if(cBox) cBox.oninput = (e) => Modules.Diary.tempMeeting.content = e.target.value;
+                        if(nBox) nBox.oninput = (e) => Modules.Diary.tempMeeting.notes = e.target.value;
+                    }, 100);
+                },
+
                 showMemberPicker: () => {
                     const members = DB.get('members');
                     if (members.length === 0) return Modal.alert('Ni članov v bazi.');
                     
                     let opts = members.map(m => `<option value="${m.id}">${m.name} ${m.surname}</option>`).join('');
-                    const html = `
-                        <select id="member-select">${opts}</select>
-                    `;
+                    const html = `<select id="member-select" style="font-size:16px;">${opts}</select>`;
+                    
                     Modal.show('Izberi člana', html, [
                         { 
                             text: 'Dodaj', 
                             onClick: () => {
                                 const id = $('member-select').value;
                                 const m = members.find(x => x.id == id);
-                                // Check if already added
+                                // Prepreči duplikate
                                 if(!Modules.Diary.tempMeeting.attendees.find(x => x.memberId === id)) {
                                     Modules.Diary.tempMeeting.attendees.push({
                                         memberId: m.id,
@@ -698,48 +674,48 @@
                                         note: ''
                                     });
                                 }
-                                Modules.Diary.rerenderForm();
+                                Modules.Diary.rerenderForm(); // Nazaj na glavni form
                             }
                         },
-                        { text: 'Prekliči', style: 'btn-secondary', onClick: Modules.Diary.rerenderForm }
+                        { text: 'Prekliči', style: 'btn-secondary', onClick: () => Modules.Diary.rerenderForm() }
                     ]);
                 },
+
                 removeAttendee: (idx) => {
                     Modules.Diary.tempMeeting.attendees.splice(idx, 1);
                     Modules.Diary.rerenderForm();
                 },
+
                 addNoteToAttendee: (idx) => {
                     Modal.prompt('Opomba za člana', 'Vpiši opombo...', (val) => {
                         Modules.Diary.tempMeeting.attendees[idx].note = val;
                         Modules.Diary.rerenderForm();
                     });
                 },
+
                 saveMeeting: () => {
                     let meetings = DB.get('meetings');
                     const tm = Modules.Diary.tempMeeting;
                     
-                    // Update metadata
+                    // Metadata update
                     tm.lastModBy = DB.currentUser.name + ' ' + DB.currentUser.surname;
                     tm.lastModDate = new Date().toLocaleString('sl-SI');
-                    tm.type = 'meeting'; // Ensure type is meeting
+                    tm.type = 'meeting'; // Zagotovi da je tip meeting, da bo zelena barva
 
                     const idx = meetings.findIndex(m => m.date === tm.date);
                     if (idx > -1) meetings[idx] = tm;
                     else meetings.push(tm);
 
                     DB.set('meetings', meetings);
-                    Modules.Diary.renderCalendar();
-                    Modal.close(); // Close form
+                    Modules.Diary.renderCalendar(); // To bo pobarvalo celico na zeleno
+                    Modal.close();
                 }
             },
 
-            // 5. ARHIV
             Archive: {
                 render: () => {
                     const term = $('search-archive') ? $('search-archive').value.toLowerCase() : '';
-                    const meetings = DB.get('meetings').filter(m => m.type === 'meeting'); // Only real meetings
-                    
-                    // Filter
+                    const meetings = DB.get('meetings').filter(m => m.type === 'meeting');
                     const filtered = meetings.filter(m => m.date.includes(term));
                     
                     let html = '';
@@ -761,9 +737,7 @@
             }
         };
 
-        // Start
         window.onload = App.init;
-
     </script>
 </body>
 </html>
