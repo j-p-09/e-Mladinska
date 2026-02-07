@@ -2,742 +2,878 @@
 <html lang="sl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eMladinska</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>eMladinska Aplikacija</title>
     <style>
         :root {
             --primary: #4a90e2;
             --primary-dark: #357abd;
-            --secondary: #f39c12;
+            --secondary: #f5f6fa;
+            --text: #2c3e50;
             --danger: #e74c3c;
-            --success: #2ecc71;
-            --text: #333;
-            --bg: #f4f7f6;
-            --white: #ffffff;
             --pastel-red: #ffb3b3;
             --pastel-gray: #d3d3d3;
-            --pastel-green: #b3ffb3; /* Zelena za srečanja */
-            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --pastel-green: #b3ffb3;
+            --white: #ffffff;
+            --border: #dcdde1;
             --radius: 12px;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        body { margin: 0; padding: 0; background-color: var(--bg); color: var(--text); }
+        body { margin: 0; background-color: #f0f2f5; color: var(--text); padding-bottom: 20px; }
 
-        /* --- Layout & Utilities --- */
-        .container { max-width: 800px; margin: 0 auto; padding: 20px; min-height: 100vh; padding-bottom: 80px; }
+        /* --- UTILS --- */
         .hidden { display: none !important; }
-        .text-center { text-align: center; }
-        .bold { font-weight: bold; }
-        .flex { display: flex; gap: 10px; align-items: center; }
-        .space-between { justify-content: space-between; }
-        .w-100 { width: 100%; }
-        .mt-2 { margin-top: 20px; }
-        .text-muted { color: #777; font-size: 0.9em; }
-        
-        h1, h2, h3 { margin-top: 0; color: var(--primary-dark); }
-
-        /* --- Buttons & Inputs --- */
-        button {
-            padding: 12px 20px; border: none; border-radius: var(--radius);
-            font-size: 16px; cursor: pointer; transition: transform 0.1s, opacity 0.2s;
-            font-weight: 600; box-shadow: var(--shadow);
+        .container { max-width: 800px; margin: 0 auto; padding: 15px; }
+        .btn {
+            background: var(--primary); color: white; border: none; padding: 12px 20px;
+            border-radius: var(--radius); cursor: pointer; font-size: 1rem; width: 100%;
+            transition: 0.2s; margin-bottom: 10px; font-weight: 600;
         }
-        button:active { transform: scale(0.98); }
-        .btn-primary { background-color: var(--primary); color: var(--white); }
-        .btn-danger { background-color: var(--danger); color: var(--white); }
-        .btn-secondary { background-color: var(--secondary); color: var(--white); }
-        .btn-success { background-color: var(--success); color: var(--white); }
-        .btn-neutral { background-color: #95a5a6; color: white; }
-        .btn-block { width: 100%; display: block; margin-bottom: 10px; }
-
+        .btn:active { transform: scale(0.98); }
+        .btn-danger { background: var(--danger); }
+        .btn-secondary { background: #95a5a6; }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        
         input, select, textarea {
-            width: 100%; padding: 12px; margin-bottom: 10px;
-            border: 1px solid #ddd; border-radius: var(--radius);
-            font-size: 16px; background: var(--white);
+            width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border);
+            border-radius: var(--radius); font-size: 1rem; background: white;
         }
-        input:focus, select:focus, textarea:focus { outline: 2px solid var(--primary); border-color: transparent; }
 
-        /* --- Cards & Lists --- */
-        .card { background: var(--white); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 20px; }
+        /* --- LOGIN --- */
+        #login-page {
+            height: 100vh; display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, var(--primary), #2c3e50);
+        }
+        .login-card {
+            background: white; padding: 40px; border-radius: 20px; width: 90%; max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center;
+        }
+        .login-card h1 { color: var(--primary); margin-bottom: 30px; }
+
+        /* --- DASHBOARD --- */
+        .header {
+            background: white; padding: 20px; border-radius: 0 0 20px 20px;
+            box-shadow: var(--shadow); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .welcome-msg { font-size: 1.2rem; font-weight: bold; }
         
-        .list-item {
-            background: var(--white); padding: 15px; border-radius: var(--radius);
-            margin-bottom: 10px; border-left: 5px solid var(--primary);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;
+        .grid-menu {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;
         }
-        .list-item.archived { border-left-color: var(--secondary); }
+        .menu-item {
+            background: white; padding: 30px 10px; border-radius: var(--radius);
+            text-align: center; font-weight: bold; box-shadow: var(--shadow);
+            cursor: pointer; transition: 0.2s; font-size: 1.1rem;
+        }
+        .menu-item:hover { transform: translateY(-3px); }
+        .menu-item.full-width { grid-column: span 2; background: var(--primary); color: white; }
 
-        /* --- Custom Modal --- */
+        /* --- SECTIONS --- */
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .back-btn { background: transparent; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text); }
+        
+        /* --- TABLES / LISTS (Mobile Responsive) --- */
+        .data-table { width: 100%; border-collapse: collapse; background: white; border-radius: var(--radius); overflow: hidden; }
+        .data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+        .data-table th { background: var(--secondary); font-weight: 600; }
+        
+        @media (max-width: 600px) {
+            .data-table, .data-table thead, .data-table tbody, .data-table th, .data-table td, .data-table tr { 
+                display: block; 
+            }
+            .data-table thead tr { position: absolute; top: -9999px; left: -9999px; }
+            .data-table tr { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 15px; padding: 10px; background: white; box-shadow: var(--shadow); }
+            .data-table td { border: none; position: relative; padding-left: 50%; padding-bottom: 5px; }
+            .data-table td:before { 
+                position: absolute; top: 12px; left: 10px; width: 45%; padding-right: 10px; white-space: nowrap; font-weight: bold; font-size: 0.9rem; color: #7f8c8d;
+                content: attr(data-label); 
+            }
+        }
+
+        /* --- DNEVNIK GRID --- */
+        .calendar-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px;
+        }
+        .cal-cell {
+            background: white; padding: 15px; border-radius: var(--radius); text-align: center;
+            box-shadow: var(--shadow); cursor: pointer; font-weight: bold; border: 2px solid transparent;
+        }
+        .cal-cell.status-cancelled { background-color: var(--pastel-red); }
+        .cal-cell.status-holiday { background-color: var(--pastel-gray); color: #555; }
+        .cal-cell.status-ok { background-color: var(--pastel-green); }
+
+        /* --- MODALS --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); z-index: 1000; display: flex;
-            justify-content: center; align-items: center; backdrop-filter: blur(3px);
+            background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(3px);
         }
-        .modal-content {
-            background: var(--white); padding: 25px; border-radius: var(--radius);
-            width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            animation: slideUp 0.3s ease; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column;
+        .modal-box {
+            background: white; width: 95%; max-width: 500px; padding: 25px;
+            border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            max-height: 90vh; overflow-y: auto; animation: popIn 0.3s ease;
         }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        /* --- Specific Views --- */
-        #login-view { display: flex; flex-direction: column; justify-content: center; height: 90vh; }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
-        .menu-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        @media (min-width: 600px) { .menu-grid { grid-template-columns: repeat(2, 1fr); } }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+        .modal-actions .btn { flex: 1; }
 
-        /* Calendar Grid */
-        .calendar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
-        .calendar-cell {
-            background: var(--white); padding: 15px; border-radius: var(--radius);
-            text-align: center; cursor: pointer; border: 2px solid #eee; font-weight: bold;
-            transition: background-color 0.3s;
+        /* --- ATTENDANCE LIST IN MODAL --- */
+        .attendance-list { margin: 15px 0; border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; min-height: 50px; }
+        .att-item { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 8px; border-bottom: 1px solid #eee; 
         }
-        .calendar-cell:hover { border-color: var(--primary); }
+        .att-name { font-weight: bold; cursor: pointer; }
+        .att-name:hover { text-decoration: line-through; color: var(--danger); }
+        .att-note-icon { cursor: pointer; color: var(--primary); font-size: 1.2rem; padding: 0 10px; }
+
+        .form-label { display: block; margin-bottom: 5px; font-weight: 600; color: #7f8c8d; font-size: 0.9rem; }
         
-        /* Barve celic */
-        .status-meeting { background-color: var(--pastel-green) !important; border-color: var(--success); }
-        .status-cancelled { background-color: var(--pastel-red) !important; border-color: var(--danger); }
-        .status-holiday { background-color: var(--pastel-gray) !important; border-color: #777; }
-
-        /* Attendees Table in Modal */
-        .attendees-list { margin: 15px 0; border-top: 1px solid #eee; }
-        .attendee-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px; border-bottom: 1px solid #eee; animation: fadeIn 0.2s;
+        .toast {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: #333; color: white; padding: 10px 20px; border-radius: 50px;
+            z-index: 2000; font-size: 0.9rem; opacity: 0; transition: 0.3s;
         }
-        .attendee-name { font-weight: bold; cursor: pointer; color: var(--text); }
-        .attendee-name:hover { text-decoration: line-through; color: var(--danger); }
-        .attendee-note-btn { cursor: pointer; font-size: 1.2em; margin-left: 10px; }
-
     </style>
 </head>
 <body>
 
-    <div id="modal-container"></div>
+    <div id="toast" class="toast">Sporočilo</div>
 
-    <div class="container">
-        <header id="app-header" class="hidden" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-            <h2 id="header-title" style="margin:0;">eMladinska</h2>
-            <button class="btn-secondary" style="padding: 5px 10px; font-size: 12px;" onclick="App.logout()">Odjava</button>
-        </header>
-
-        <div id="login-view">
-            <div class="card text-center">
-                <h1>eMladinska</h1>
-                <p>Prijavna stran</p>
-                <input type="text" id="login-user" placeholder="Uporabniško ime" />
-                <input type="password" id="login-pass" placeholder="Geslo" />
-                <button class="btn-primary btn-block" onclick="App.login()">Prijava</button>
-            </div>
+    <div id="login-page">
+        <div class="login-card">
+            <h1>eMladinska</h1>
+            <input type="text" id="login-user" placeholder="Uporabniško ime" />
+            <input type="password" id="login-pass" placeholder="Geslo" />
+            <button class="btn" onclick="app.login()">Prijavi se</button>
         </div>
-
-        <div id="home-view" class="hidden">
-            <div class="card">
-                <h2 id="welcome-msg">Pozdravljen, Uporabnik</h2>
-            </div>
-            <div class="menu-grid">
-                <button class="btn-primary btn-block" onclick="App.router('dnevnik')">DNEVNIK</button>
-                <button class="btn-primary btn-block" onclick="App.router('arhiv')">ARHIV</button>
-                <button class="btn-primary btn-block" onclick="App.router('clani')">ČLANI</button>
-                <button class="btn-primary btn-block" onclick="App.router('podatki')">PODATKI</button>
-                <button class="btn-primary btn-block" onclick="App.router('profil')">PROFIL</button>
-            </div>
-        </div>
-
-        <div id="profil-view" class="hidden">
-            <button class="btn-neutral" onclick="App.router('home')">← Nazaj</button>
-            <h3>Urejanje Profila</h3>
-            <div class="card">
-                <input type="text" id="prof-name" placeholder="Ime">
-                <input type="text" id="prof-surname" placeholder="Priimek">
-                <input type="text" id="prof-username" placeholder="Uporabniško ime">
-                <input type="password" id="prof-password" placeholder="Geslo">
-                <button class="btn-primary btn-block" onclick="Modules.Profile.save()">Shrani spremembe</button>
-            </div>
-        </div>
-
-        <div id="podatki-view" class="hidden">
-            <button class="btn-neutral" onclick="App.router('home')">← Nazaj</button>
-            <div class="flex space-between" style="margin-top: 10px;">
-                <h3>Uporabniki sistema</h3>
-                <button class="btn-primary" onclick="Modules.Users.add()">+ Dodaj</button>
-            </div>
-            <div id="users-list" class="mt-2"></div>
-        </div>
-
-        <div id="clani-view" class="hidden">
-            <button class="btn-neutral" onclick="App.router('home')">← Nazaj</button>
-            <div class="flex space-between" style="margin-top: 10px;">
-                <h3>Seznam članov</h3>
-                <button class="btn-primary" onclick="Modules.Members.add()">+ Nov Član</button>
-            </div>
-            <div id="members-list" class="mt-2"></div>
-        </div>
-
-        <div id="arhiv-view" class="hidden">
-            <button class="btn-neutral" onclick="App.router('home')">← Nazaj</button>
-            <h3>Arhiv srečanj</h3>
-            <input type="text" id="search-archive" placeholder="Išči po datumu (DD.MM.YYYY)..." onkeyup="Modules.Archive.render()">
-            <div id="archive-list" class="mt-2"></div>
-        </div>
-
-        <div id="dnevnik-view" class="hidden">
-            <button class="btn-neutral" onclick="App.router('home')">← Nazaj</button>
-            <h3>Dnevnik 2026 (Petki)</h3>
-            <div id="calendar-grid" class="calendar-grid"></div>
-        </div>
-
     </div>
 
+    <div id="dashboard-page" class="hidden container">
+        <div class="header">
+            <span class="welcome-msg" id="welcome-text">Pozdravljen!</span>
+            <button class="btn-outline" style="width: auto; padding: 5px 15px; margin:0;" onclick="app.logout()">Odjava</button>
+        </div>
+        
+        <div class="grid-menu">
+            <div class="menu-item full-width" onclick="app.navTo('dnevnik')">📅 DNEVNIK</div>
+            <div class="menu-item" onclick="app.navTo('arhiv')">📂 ARHIV</div>
+            <div class="menu-item" onclick="app.navTo('clani')">👥 ČLANI</div>
+            <div class="menu-item" onclick="app.checkAdminAccess()">🔒 PODATKI</div>
+            <div class="menu-item" onclick="app.navTo('profil')">👤 PROFIL</div>
+        </div>
+    </div>
+
+    <div id="profil-page" class="hidden container">
+        <div class="section-header">
+            <button class="back-btn" onclick="app.navTo('dashboard')">⬅</button>
+            <h2>Moj Profil</h2>
+            <div></div>
+        </div>
+        <div style="background: white; padding: 20px; border-radius: 12px;">
+            <label class="form-label">Ime</label>
+            <input type="text" id="prof-fname">
+            <label class="form-label">Priimek</label>
+            <input type="text" id="prof-lname">
+            <label class="form-label">Uporabniško ime</label>
+            <input type="text" id="prof-user">
+            <label class="form-label">Geslo</label>
+            <input type="password" id="prof-pass">
+            <button class="btn" onclick="app.updateProfile()">Shrani spremembe</button>
+        </div>
+    </div>
+
+    <div id="podatki-page" class="hidden container">
+        <div class="section-header">
+            <button class="back-btn" onclick="app.navTo('dashboard')">⬅</button>
+            <h2>Uporabniki sistema</h2>
+            <button class="btn" style="width: auto;" onclick="app.openUserModal()">+ Dodaj</button>
+        </div>
+        <div id="users-list"></div>
+    </div>
+
+    <div id="clani-page" class="hidden container">
+        <div class="section-header">
+            <button class="back-btn" onclick="app.navTo('dashboard')">⬅</button>
+            <h2>Seznam Članov</h2>
+            <button class="btn" style="width: auto;" onclick="app.openMemberModal()">+ Dodaj</button>
+        </div>
+        <input type="text" placeholder="Išči člana..." onkeyup="app.renderMembers(this.value)">
+        <div id="members-list"></div>
+    </div>
+
+    <div id="arhiv-page" class="hidden container">
+        <div class="section-header">
+            <button class="back-btn" onclick="app.navTo('dashboard')">⬅</button>
+            <h2>Arhiv Srečanj</h2>
+            <div></div>
+        </div>
+        <input type="month" id="archive-filter" onchange="app.renderArchive()">
+        <div id="archive-list"></div>
+    </div>
+
+    <div id="dnevnik-page" class="hidden container">
+        <div class="section-header">
+            <button class="back-btn" onclick="app.navTo('dashboard')">⬅</button>
+            <h2>Petki 2026</h2>
+            <div></div>
+        </div>
+        <div class="calendar-grid" id="calendar-grid">
+            </div>
+    </div>
+
+    <div id="alert-modal" class="modal-overlay hidden">
+        <div class="modal-box" style="text-align: center;">
+            <h3 id="alert-title">Obvestilo</h3>
+            <p id="alert-msg">Vsebina</p>
+            <div id="alert-input-container" class="hidden">
+                <input type="text" id="alert-input">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="alert-cancel" onclick="app.closeAlert()">Prekliči</button>
+                <button class="btn" id="alert-ok">V redu</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="action-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h3>Izberi akcijo za <span id="action-date-display"></span></h3>
+            <button class="btn" onclick="app.openMeetingModal()">📝 Zabeleži srečanje</button>
+            <button class="btn btn-danger" onclick="app.setStatus('cancelled')">🚫 Odpovej srečanje</button>
+            <button class="btn btn-secondary" onclick="app.setStatus('holiday')">🏖️ Počitnice / Prosto</button>
+            <button class="btn btn-outline" onclick="document.getElementById('action-modal').classList.add('hidden')">Zapri</button>
+        </div>
+    </div>
+
+    <div id="meeting-modal" class="modal-overlay hidden">
+        <div class="modal-box" style="max-width: 600px;">
+            <h3>Zabeleži srečanje: <span id="meet-date-display"></span></h3>
+            
+            <label class="form-label">Prisotni člani (klikni ime za izbris, svinčnik za opombo)</label>
+            <div id="attendance-box" class="attendance-list">
+                <div style="text-align:center; color:#999; font-style:italic;">Ni prisotnih</div>
+            </div>
+
+            <label class="form-label">Vsebina srečanja</label>
+            <textarea id="meet-content" rows="4"></textarea>
+
+            <label class="form-label">Opombe</label>
+            <input type="text" id="meet-notes">
+
+            <div style="font-size: 0.8rem; color: #7f8c8d; margin-top: 10px; text-align: right;">
+                Zadnja sprememba: <span id="meet-last-user">-</span>, <span id="meet-last-ts">-</span>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="app.closeMeetingModal()">Zapri (Zavrzi)</button>
+                <button class="btn btn-outline" onclick="app.openAddMemberPicker()">+ Člani</button>
+                <button class="btn" onclick="app.saveMeeting()">Shrani</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="picker-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h3>Izberi člana</h3>
+            <input type="text" placeholder="Išči..." id="picker-search" onkeyup="app.renderMemberPicker(this.value)">
+            <div id="picker-list" style="max-height: 300px; overflow-y: auto;"></div>
+            <button class="btn btn-secondary" style="margin-top:15px;" onclick="document.getElementById('picker-modal').classList.add('hidden')">Prekliči</button>
+        </div>
+    </div>
+
+    <div id="user-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h3 id="um-title">Uredi uporabnika</h3>
+            <input type="hidden" id="um-id">
+            <input type="text" id="um-user" placeholder="Uporabniško ime">
+            <input type="text" id="um-fname" placeholder="Ime">
+            <input type="text" id="um-lname" placeholder="Priimek">
+            <input type="password" id="um-pass" placeholder="Geslo">
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="document.getElementById('user-modal').classList.add('hidden')">Prekliči</button>
+                <button class="btn" onclick="app.saveUser()">Shrani</button>
+            </div>
+        </div>
+    </div>
+
+     <div id="member-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h3 id="mm-title">Uredi člana</h3>
+            <input type="hidden" id="mm-id">
+            <input type="text" id="mm-fname" placeholder="Ime">
+            <input type="text" id="mm-lname" placeholder="Priimek">
+            <label class="form-label">Vir</label>
+            <select id="mm-source">
+                <option value="Messenger Skupina">Messenger Skupina</option>
+                <option value="Ročno">Ročno</option>
+            </select>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="document.getElementById('member-modal').classList.add('hidden')">Prekliči</button>
+                <button class="btn" onclick="app.saveMember()">Shrani</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="stats-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h3>Statistika: <span id="stats-name"></span></h3>
+            <label class="form-label">Od</label>
+            <input type="date" id="stats-from">
+            <label class="form-label">Do</label>
+            <input type="date" id="stats-to">
+            <button class="btn" onclick="app.calculateStats()">Prikaži prisotnost</button>
+            <div id="stats-result" style="margin-top: 20px; font-weight: bold; text-align: center; font-size: 1.2rem;"></div>
+            <button class="btn btn-secondary" onclick="document.getElementById('stats-modal').classList.add('hidden')">Zapri</button>
+        </div>
+    </div>
+
+
     <script>
-        // --- DATA LAYER ---
-        const DB = {
-            init: () => {
-                if (!localStorage.getItem('eMladinska_users')) {
-                    localStorage.setItem('eMladinska_users', JSON.stringify([
-                        { id: 1, name: 'Admin', surname: 'User', username: 'admin', pass: 'admin' }
-                    ]));
-                }
-                if (!localStorage.getItem('eMladinska_members')) {
-                    localStorage.setItem('eMladinska_members', JSON.stringify([]));
-                }
-                if (!localStorage.getItem('eMladinska_meetings')) {
-                    localStorage.setItem('eMladinska_meetings', JSON.stringify([]));
-                }
+        const app = {
+            currentUser: null,
+            data: {
+                users: [],
+                members: [],
+                meetings: {} // Key: YYYY-MM-DD, Value: Object
             },
-            get: (key) => JSON.parse(localStorage.getItem(`eMladinska_${key}`) || '[]'),
-            set: (key, data) => localStorage.setItem(`eMladinska_${key}`, JSON.stringify(data)),
-            currentUser: null
-        };
-
-        // --- UTILS ---
-        const $ = (id) => document.getElementById(id);
-        const generateId = () => Date.now().toString(36) + Math.random().toString(36).substr(2);
-
-        // --- CUSTOM MODAL SYSTEM ---
-        const Modal = {
-            close: () => {
-                const el = $('modal-overlay');
-                if (el) el.remove();
+            temp: {
+                selectedDate: null,
+                meetingDraft: null
             },
-            show: (title, contentHTML, buttons = []) => {
-                Modal.close(); // Close existing
-                const container = $('modal-container');
-                const overlay = document.createElement('div');
-                overlay.id = 'modal-overlay';
-                overlay.className = 'modal-overlay';
+
+            init: function() {
+                // Load data
+                const users = localStorage.getItem('em_users');
+                const members = localStorage.getItem('em_members');
+                const meetings = localStorage.getItem('em_meetings');
+
+                if (users) this.data.users = JSON.parse(users);
+                else {
+                    // Seed Admin
+                    this.data.users = [{id: 1, user: 'admin', pass: 'admin', fname: 'Admin', lname: 'System'}];
+                    this.saveData('users');
+                }
+
+                if (members) this.data.members = JSON.parse(members);
+                if (meetings) this.data.meetings = JSON.parse(meetings);
+            },
+
+            saveData: function(key) {
+                if(key === 'users') localStorage.setItem('em_users', JSON.stringify(this.data.users));
+                if(key === 'members') localStorage.setItem('em_members', JSON.stringify(this.data.members));
+                if(key === 'meetings') localStorage.setItem('em_meetings', JSON.stringify(this.data.meetings));
+            },
+
+            // --- AUTH ---
+            login: function() {
+                const u = document.getElementById('login-user').value;
+                const p = document.getElementById('login-pass').value;
                 
-                let btnsHTML = '';
-                buttons.forEach((btn, idx) => {
-                    const style = btn.style || 'btn-primary';
-                    btnsHTML += `<button id="modal-btn-${idx}" class="${style} w-100" style="margin-top:5px;">${btn.text}</button>`;
-                });
-
-                overlay.innerHTML = `
-                    <div class="modal-content">
-                        <h3 class="text-center">${title}</h3>
-                        <div style="flex:1; overflow-y:auto;">${contentHTML}</div>
-                        <div class="mt-2">${btnsHTML}</div>
-                    </div>
-                `;
-                container.appendChild(overlay);
-
-                // Attach events
-                buttons.forEach((btn, idx) => {
-                    $(`modal-btn-${idx}`).onclick = () => {
-                        if (btn.onClick) btn.onClick();
-                        if (btn.close !== false) Modal.close();
-                    };
-                });
-            },
-            alert: (msg, callback) => {
-                Modal.show('Obvestilo', `<p class="text-center">${msg}</p>`, [{ text: 'V redu', onClick: callback }]);
-            },
-            confirm: (msg, onYes) => {
-                Modal.show('Potrditev', `<p class="text-center">${msg}</p>`, [
-                    { text: 'Da', onClick: onYes, style: 'btn-primary' },
-                    { text: 'Prekliči', style: 'btn-secondary' }
-                ]);
-            },
-            prompt: (title, placeholder, onSubmit) => {
-                const html = `<input type="text" id="modal-prompt-input" placeholder="${placeholder}">`;
-                Modal.show(title, html, [
-                    { 
-                        text: 'Potrdi', 
-                        onClick: () => {
-                            const val = $('modal-prompt-input').value;
-                            if(val) onSubmit(val);
-                        } 
-                    },
-                    { text: 'Prekliči', style: 'btn-neutral' }
-                ]);
-            }
-        };
-
-        // --- APP CORE ---
-        const App = {
-            init: () => {
-                DB.init();
-                const savedUser = sessionStorage.getItem('currentUser');
-                if (savedUser) {
-                    DB.currentUser = JSON.parse(savedUser);
-                    App.router('home');
-                } else {
-                    App.router('login');
-                }
-            },
-
-            login: () => {
-                const u = $('login-user').value;
-                const p = $('login-pass').value;
-                const users = DB.get('users');
-                const user = users.find(x => x.username === u && x.pass === p);
-
-                if (user) {
-                    DB.currentUser = user;
-                    sessionStorage.setItem('currentUser', JSON.stringify(user));
-                    Modal.alert('Prijava uspešna! Dostop odobren.', () => App.router('home'));
-                } else {
-                    Modal.alert('Dostop zavrnjen. Napačni podatki.');
-                }
-            },
-
-            logout: () => {
-                DB.currentUser = null;
-                sessionStorage.removeItem('currentUser');
-                $('login-user').value = '';
-                $('login-pass').value = '';
-                App.router('login');
-            },
-
-            router: (view) => {
-                ['login-view', 'home-view', 'profil-view', 'podatki-view', 'clani-view', 'arhiv-view', 'dnevnik-view'].forEach(v => $(v).classList.add('hidden'));
-                $('app-header').classList.add('hidden');
-
-                if (view === 'login') {
-                    $('login-view').classList.remove('hidden');
-                } else {
-                    $('app-header').classList.remove('hidden');
-                    
-                    if (view === 'home') {
-                        $('welcome-msg').innerText = `Pozdravljen, ${DB.currentUser.name}`;
-                        $('home-view').classList.remove('hidden');
-                    } else if (view === 'profil') {
-                        Modules.Profile.load();
-                        $('profil-view').classList.remove('hidden');
-                    } else if (view === 'podatki') {
-                        Modal.prompt('Varnostno preverjanje', 'Vpiši admin geslo', (val) => {
-                            if (val === 'ADMIN') {
-                                Modules.Users.render();
-                                $('podatki-view').classList.remove('hidden');
-                            } else {
-                                Modal.alert('Napačno geslo!', () => App.router('home'));
-                            }
-                        });
-                    } else if (view === 'clani') {
-                        Modules.Members.render();
-                        $('clani-view').classList.remove('hidden');
-                    } else if (view === 'arhiv') {
-                        Modules.Archive.render();
-                        $('arhiv-view').classList.remove('hidden');
-                    } else if (view === 'dnevnik') {
-                        Modules.Diary.renderCalendar();
-                        $('dnevnik-view').classList.remove('hidden');
-                    }
-                }
-            }
-        };
-
-        // --- MODULES ---
-
-        const Modules = {
-            Profile: {
-                load: () => {
-                    const u = DB.currentUser;
-                    $('prof-name').value = u.name;
-                    $('prof-surname').value = u.surname;
-                    $('prof-username').value = u.username;
-                    $('prof-password').value = u.pass;
-                },
-                save: () => {
-                    let users = DB.get('users');
-                    const idx = users.findIndex(u => u.id === DB.currentUser.id);
-                    if (idx > -1) {
-                        users[idx].name = $('prof-name').value;
-                        users[idx].surname = $('prof-surname').value;
-                        users[idx].username = $('prof-username').value;
-                        users[idx].pass = $('prof-password').value;
-                        DB.set('users', users);
-                        DB.currentUser = users[idx];
-                        sessionStorage.setItem('currentUser', JSON.stringify(users[idx]));
-                        Modal.alert('Podatki posodobljeni.');
-                    }
-                }
-            },
-
-            Users: {
-                render: () => {
-                    const users = DB.get('users');
-                    let html = '';
-                    users.forEach(u => {
-                        html += `
-                        <div class="list-item" onclick="Modules.Users.edit('${u.id}')">
-                            <div><strong>${u.name} ${u.surname}</strong><br><small>@${u.username}</small></div>
-                            <span>✎</span>
-                        </div>`;
-                    });
-                    $('users-list').innerHTML = html;
-                },
-                add: () => { Modules.Users.showForm({}, true); },
-                edit: (id) => {
-                    const user = DB.get('users').find(u => u.id == id);
-                    Modules.Users.showForm(user, false);
-                },
-                showForm: (user, isNew) => {
-                    const html = `
-                        <input type="text" id="u-name" placeholder="Ime" value="${user.name || ''}">
-                        <input type="text" id="u-surname" placeholder="Priimek" value="${user.surname || ''}">
-                        <input type="text" id="u-user" placeholder="Uporabniško ime" value="${user.username || ''}">
-                        <input type="text" id="u-pass" placeholder="Geslo" value="${user.pass || ''}">
-                    `;
-                    const btns = [
-                        { text: 'Shrani', onClick: () => Modules.Users.save(user.id, isNew) },
-                        { text: 'Prekliči', style: 'btn-neutral' }
-                    ];
-                    if (!isNew && user.username !== 'admin') {
-                        btns.push({ text: 'Izbriši', style: 'btn-danger', onClick: () => Modules.Users.delete(user.id) });
-                    }
-                    Modal.show(isNew ? 'Nov Uporabnik' : 'Uredi Uporabnika', html, btns);
-                },
-                save: (id, isNew) => {
-                    let users = DB.get('users');
-                    const newUser = {
-                        id: isNew ? generateId() : id,
-                        name: $('u-name').value,
-                        surname: $('u-surname').value,
-                        username: $('u-user').value,
-                        pass: $('u-pass').value
-                    };
-                    if(!newUser.name || !newUser.username || !newUser.pass) return Modal.alert('Vsa polja so obvezna.');
-                    if (isNew) users.push(newUser);
-                    else users[users.findIndex(u => u.id == id)] = newUser;
-                    DB.set('users', users);
-                    Modules.Users.render();
-                    Modal.close();
-                },
-                delete: (id) => {
-                    Modal.confirm('Ali res želiš izbrisati uporabnika?', () => {
-                        let users = DB.get('users').filter(u => u.id != id);
-                        DB.set('users', users);
-                        Modules.Users.render();
-                        Modal.close();
-                    });
-                }
-            },
-
-            Members: {
-                render: () => {
-                    const members = DB.get('members');
-                    let html = '';
-                    members.forEach(m => {
-                        html += `
-                        <div class="list-item" onclick="Modules.Members.details('${m.id}')">
-                            <div><strong>${m.name} ${m.surname}</strong><br><small>Vir: ${m.source}</small></div>
-                            <span>📊</span>
-                        </div>`;
-                    });
-                    $('members-list').innerHTML = html || '<p class="text-center">Ni članov.</p>';
-                },
-                add: () => { Modules.Members.showForm({}, true); },
-                details: (id) => {
-                    const m = DB.get('members').find(x => x.id === id);
-                    const meetings = DB.get('meetings');
-                    const presentCount = meetings.filter(mt => mt.type === 'meeting' && mt.attendees && mt.attendees.some(a => a.memberId === id)).length;
-                    
-                    const html = `
-                        <p><strong>Ime:</strong> ${m.name} ${m.surname}</p>
-                        <p><strong>Vir:</strong> ${m.source}</p>
-                        <hr>
-                        <p class="text-center"><strong>Prisotnost:</strong> ${presentCount} x</p>
-                        <div class="text-center mt-2"><small>Za urejanje klikni spodaj</small></div>
-                    `;
-                    Modal.show('Podrobnosti člana', html, [
-                        { text: 'Uredi podatke', onClick: () => Modules.Members.showForm(m, false) },
-                        { text: 'Nazaj', style: 'btn-neutral' }
-                    ]);
-                },
-                showForm: (m, isNew) => {
-                    const html = `
-                        <input type="text" id="m-name" placeholder="Ime" value="${m.name || ''}">
-                        <input type="text" id="m-surname" placeholder="Priimek" value="${m.surname || ''}">
-                        <select id="m-source">
-                            <option value="Ročno" ${m.source === 'Ročno' ? 'selected' : ''}>Ročno</option>
-                            <option value="Messenger Skupina" ${m.source === 'Messenger Skupina' ? 'selected' : ''}>Messenger Skupina</option>
-                        </select>
-                    `;
-                    const btns = [
-                        { text: 'Shrani', onClick: () => Modules.Members.save(m.id, isNew) },
-                        { text: 'Prekliči', style: 'btn-neutral' }
-                    ];
-                    if (!isNew) {
-                        btns.push({ text: 'Izbriši', style: 'btn-danger', onClick: () => Modules.Members.delete(m.id) });
-                    }
-                    Modal.show(isNew ? 'Nov Član' : 'Uredi Člana', html, btns);
-                },
-                save: (id, isNew) => {
-                    let list = DB.get('members');
-                    const newM = {
-                        id: isNew ? generateId() : id,
-                        name: $('m-name').value,
-                        surname: $('m-surname').value,
-                        source: $('m-source').value
-                    };
-                    if(!newM.name) return Modal.alert('Ime je obvezno.');
-                    if (isNew) list.push(newM);
-                    else list[list.findIndex(x => x.id == id)] = newM;
-                    DB.set('members', list);
-                    Modules.Members.render();
-                    Modal.close();
-                },
-                delete: (id) => {
-                    Modal.confirm('Izbrišem člana?', () => {
-                        let list = DB.get('members').filter(x => x.id != id);
-                        DB.set('members', list);
-                        Modules.Members.render();
-                        Modal.close();
-                    });
-                }
-            },
-
-            Diary: {
-                tempMeeting: null,
+                const found = this.data.users.find(user => user.user === u && user.pass === p);
                 
-                renderCalendar: () => {
-                    const grid = $('calendar-grid');
-                    grid.innerHTML = '';
-                    const meetings = DB.get('meetings');
-                    
-                    // Datumi za 2026
-                    let d = new Date('2026-01-01');
-                    const end = new Date('2026-12-31');
-                    
-                    while (d <= end) {
-                        if (d.getDay() === 5) { // Petek
-                            const dateStr = d.toLocaleDateString('sl-SI');
-                            const cleanDateStr = dateStr.replace(/\s/g, ''); 
-                            
-                            const m = meetings.find(x => x.date === cleanDateStr);
-                            let statusClass = '';
-                            if (m) {
-                                if (m.type === 'meeting') statusClass = 'status-meeting';
-                                if (m.type === 'cancelled') statusClass = 'status-cancelled';
-                                if (m.type === 'holiday') statusClass = 'status-holiday';
-                            }
+                if (found) {
+                    this.currentUser = found;
+                    this.navTo('dashboard');
+                    document.getElementById('welcome-text').innerText = `Pozdravljen, ${found.fname} ${found.lname}`;
+                    document.getElementById('login-pass').value = '';
+                } else {
+                    this.showToast("Dostop zavrnjen! Napačno ime ali geslo.");
+                }
+            },
 
-                            const cell = document.createElement('div');
-                            cell.className = `calendar-cell ${statusClass}`;
-                            cell.innerText = dateStr;
-                            // Da se izognemo težavam s scope-om, passamo direktno
-                            cell.onclick = () => Modules.Diary.handleCellClick(cleanDateStr, m);
-                            grid.appendChild(cell);
+            logout: function() {
+                this.currentUser = null;
+                this.navTo('login');
+            },
+
+            // --- NAVIGACIJA ---
+            navTo: function(page) {
+                document.querySelectorAll('.container, #login-page').forEach(el => el.classList.add('hidden'));
+                if (page === 'login') {
+                    document.getElementById('login-page').classList.remove('hidden');
+                } else {
+                    document.getElementById(page + '-page').classList.remove('hidden');
+                }
+
+                // Page specific inits
+                if (page === 'profil') this.loadProfile();
+                if (page === 'clani') this.renderMembers();
+                if (page === 'dnevnik') this.renderCalendar();
+                if (page === 'arhiv') this.renderArchive();
+            },
+
+            // --- UTILS ---
+            showToast: function(msg) {
+                const t = document.getElementById('toast');
+                t.innerText = msg;
+                t.style.opacity = 1;
+                t.style.bottom = "50px";
+                setTimeout(() => { t.style.opacity = 0; t.style.bottom = "20px"; }, 3000);
+            },
+
+            customAlert: function(title, msg, hasInput, callback) {
+                document.getElementById('alert-title').innerText = title;
+                document.getElementById('alert-msg').innerText = msg;
+                const inp = document.getElementById('alert-input-container');
+                const inpField = document.getElementById('alert-input');
+                
+                if (hasInput) {
+                    inp.classList.remove('hidden');
+                    inpField.value = '';
+                    inpField.focus();
+                } else {
+                    inp.classList.add('hidden');
+                }
+
+                document.getElementById('alert-modal').classList.remove('hidden');
+                
+                const okBtn = document.getElementById('alert-ok');
+                // Remove old listeners
+                const newBtn = okBtn.cloneNode(true);
+                okBtn.parentNode.replaceChild(newBtn, okBtn);
+                
+                newBtn.addEventListener('click', () => {
+                    const val = inpField.value;
+                    document.getElementById('alert-modal').classList.add('hidden');
+                    if(callback) callback(val);
+                });
+            },
+
+            closeAlert: function() {
+                document.getElementById('alert-modal').classList.add('hidden');
+            },
+
+            // --- PROFIL ---
+            loadProfile: function() {
+                document.getElementById('prof-fname').value = this.currentUser.fname;
+                document.getElementById('prof-lname').value = this.currentUser.lname;
+                document.getElementById('prof-user').value = this.currentUser.user;
+                document.getElementById('prof-pass').value = this.currentUser.pass;
+            },
+
+            updateProfile: function() {
+                this.currentUser.fname = document.getElementById('prof-fname').value;
+                this.currentUser.lname = document.getElementById('prof-lname').value;
+                this.currentUser.user = document.getElementById('prof-user').value;
+                this.currentUser.pass = document.getElementById('prof-pass').value;
+                
+                // Update in array
+                const idx = this.data.users.findIndex(u => u.id === this.currentUser.id);
+                this.data.users[idx] = this.currentUser;
+                this.saveData('users');
+                this.showToast("Profil posodobljen!");
+            },
+
+            // --- ADMIN DOSTOP ---
+            checkAdminAccess: function() {
+                this.customAlert("Admin Dostop", "Vpiši Admin geslo:", true, (val) => {
+                    if (val === 'ADMIN') {
+                        this.renderUsers();
+                        this.navTo('podatki');
+                    } else {
+                        this.showToast("Napačno admin geslo!");
+                    }
+                });
+            },
+
+            // --- UPORABNIKI (ADMIN) ---
+            renderUsers: function() {
+                const list = document.getElementById('users-list');
+                let html = `<table class="data-table"><thead><tr><th>Ime</th><th>Priimek</th><th>Uporabnik</th><th>Akcije</th></tr></thead><tbody>`;
+                
+                this.data.users.forEach(u => {
+                    html += `
+                    <tr>
+                        <td data-label="Ime">${u.fname}</td>
+                        <td data-label="Priimek">${u.lname}</td>
+                        <td data-label="Uporabnik">${u.user}</td>
+                        <td data-label="Akcije">
+                            <button class="btn" style="padding:5px 10px; width:auto; margin:0;" onclick="app.openUserModal(${u.id})">Uredi</button>
+                            ${u.id !== 1 ? `<button class="btn btn-danger" style="padding:5px 10px; width:auto; margin:0;" onclick="app.deleteUser(${u.id})">Briši</button>` : ''}
+                        </td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+                list.innerHTML = html;
+            },
+
+            openUserModal: function(id = null) {
+                const modal = document.getElementById('user-modal');
+                modal.classList.remove('hidden');
+                if (id) {
+                    const u = this.data.users.find(x => x.id === id);
+                    document.getElementById('um-id').value = u.id;
+                    document.getElementById('um-user').value = u.user;
+                    document.getElementById('um-pass').value = u.pass;
+                    document.getElementById('um-fname').value = u.fname;
+                    document.getElementById('um-lname').value = u.lname;
+                    document.getElementById('um-title').innerText = "Uredi uporabnika";
+                } else {
+                    document.getElementById('um-id').value = '';
+                    document.getElementById('um-user').value = '';
+                    document.getElementById('um-pass').value = '';
+                    document.getElementById('um-fname').value = '';
+                    document.getElementById('um-lname').value = '';
+                    document.getElementById('um-title').innerText = "Dodaj uporabnika";
+                }
+            },
+
+            saveUser: function() {
+                const id = document.getElementById('um-id').value;
+                const newUser = {
+                    id: id ? parseInt(id) : Date.now(),
+                    user: document.getElementById('um-user').value,
+                    pass: document.getElementById('um-pass').value,
+                    fname: document.getElementById('um-fname').value,
+                    lname: document.getElementById('um-lname').value
+                };
+
+                if (id) {
+                    const idx = this.data.users.findIndex(u => u.id == id);
+                    this.data.users[idx] = newUser;
+                } else {
+                    this.data.users.push(newUser);
+                }
+                this.saveData('users');
+                document.getElementById('user-modal').classList.add('hidden');
+                this.renderUsers();
+            },
+
+            deleteUser: function(id) {
+                if(confirm("Si prepričan?")) { // Fallback, but let's stick to prompt req
+                    this.data.users = this.data.users.filter(u => u.id !== id);
+                    this.saveData('users');
+                    this.renderUsers();
+                }
+            },
+
+            // --- ČLANI ---
+            renderMembers: function(search = '') {
+                const list = document.getElementById('members-list');
+                const filtered = this.data.members.filter(m => 
+                    (m.fname + ' ' + m.lname).toLowerCase().includes(search.toLowerCase())
+                );
+
+                let html = `<table class="data-table"><thead><tr><th>Ime</th><th>Priimek</th><th>Vir</th><th>Akcije</th></tr></thead><tbody>`;
+                filtered.forEach(m => {
+                    html += `
+                    <tr onclick="app.openStats(${m.id})">
+                        <td data-label="Ime">${m.fname}</td>
+                        <td data-label="Priimek">${m.lname}</td>
+                        <td data-label="Vir">${m.source}</td>
+                        <td data-label="Akcije" onclick="event.stopPropagation()">
+                            <button class="btn" style="padding:5px; width:auto;" onclick="app.openMemberModal(${m.id})">✎</button>
+                            <button class="btn btn-danger" style="padding:5px; width:auto;" onclick="app.deleteMember(${m.id})">🗑</button>
+                        </td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+                list.innerHTML = html;
+            },
+
+            openMemberModal: function(id = null) {
+                const modal = document.getElementById('member-modal');
+                modal.classList.remove('hidden');
+                if (id) {
+                    const m = this.data.members.find(x => x.id === id);
+                    document.getElementById('mm-id').value = m.id;
+                    document.getElementById('mm-fname').value = m.fname;
+                    document.getElementById('mm-lname').value = m.lname;
+                    document.getElementById('mm-source').value = m.source;
+                    document.getElementById('mm-title').innerText = "Uredi člana";
+                } else {
+                    document.getElementById('mm-id').value = '';
+                    document.getElementById('mm-fname').value = '';
+                    document.getElementById('mm-lname').value = '';
+                    document.getElementById('mm-source').value = 'Messenger Skupina';
+                    document.getElementById('mm-title').innerText = "Dodaj člana";
+                }
+            },
+
+            saveMember: function() {
+                const id = document.getElementById('mm-id').value;
+                const newMem = {
+                    id: id ? parseInt(id) : Date.now(),
+                    fname: document.getElementById('mm-fname').value,
+                    lname: document.getElementById('mm-lname').value,
+                    source: document.getElementById('mm-source').value
+                };
+
+                if (id) {
+                    const idx = this.data.members.findIndex(m => m.id == id);
+                    this.data.members[idx] = newMem;
+                } else {
+                    this.data.members.push(newMem);
+                }
+                this.saveData('members');
+                document.getElementById('member-modal').classList.add('hidden');
+                this.renderMembers();
+            },
+
+            deleteMember: function(id) {
+                this.customAlert("Brisanje", "Res želiš izbrisati člana?", false, () => {
+                     this.data.members = this.data.members.filter(m => m.id !== id);
+                     this.saveData('members');
+                     this.renderMembers();
+                });
+            },
+
+            openStats: function(id) {
+                const m = this.data.members.find(x => x.id === id);
+                document.getElementById('stats-name').innerText = m.fname + " " + m.lname;
+                document.getElementById('stats-result').innerText = "";
+                // Default range: this year
+                document.getElementById('stats-from').value = "2026-01-01";
+                document.getElementById('stats-to').value = "2026-12-31";
+                
+                // Attach temporary ID to modal for calculation
+                document.getElementById('stats-modal').dataset.mid = id;
+                document.getElementById('stats-modal').classList.remove('hidden');
+            },
+
+            calculateStats: function() {
+                const mid = parseInt(document.getElementById('stats-modal').dataset.mid);
+                const from = new Date(document.getElementById('stats-from').value);
+                const to = new Date(document.getElementById('stats-to').value);
+                
+                let count = 0;
+                // Iterate through meetings
+                for (const [dateStr, meet] of Object.entries(this.data.meetings)) {
+                    const d = new Date(dateStr);
+                    if (d >= from && d <= to && meet.type === 'meeting' && meet.attendance) {
+                        if (meet.attendance.some(a => a.id === mid)) {
+                            count++;
                         }
-                        d.setDate(d.getDate() + 1);
                     }
-                },
+                }
+                document.getElementById('stats-result').innerText = `Prisotnost: ${count}-krat`;
+            },
 
-                handleCellClick: (dateStr, existing) => {
-                    // POPRAVEK: Če je že srečanje, odpri direktno urejanje
-                    if (existing && existing.type === 'meeting') {
-                        Modules.Diary.openMeetingForm(dateStr, existing);
-                        return;
-                    }
+            // --- KOLEDAR & SREČANJA ---
+            renderCalendar: function() {
+                const grid = document.getElementById('calendar-grid');
+                grid.innerHTML = '';
+                
+                const d = new Date('2026-01-01');
+                const end = new Date('2026-12-31');
 
-                    const html = `<p class="text-center">Datum: ${dateStr}</p>`;
-                    // Gumb za zabeleženje srečanja - kličemo openMeetingForm z null za obstoječe (ker je novo)
-                    Modal.show('Izberi akcijo', html, [
-                        { text: 'Zabeleži srečanje', onClick: () => Modules.Diary.openMeetingForm(dateStr, null) },
-                        { text: 'Odpovej srečanje', style: 'btn-danger', onClick: () => Modules.Diary.setStatus(dateStr, 'cancelled') },
-                        { text: 'Počitnice / Prosto', style: 'btn-neutral', onClick: () => Modules.Diary.setStatus(dateStr, 'holiday') },
-                        { text: 'Zapri', style: 'btn-secondary', close: true }
-                    ]);
-                },
-
-                setStatus: (dateStr, type) => {
-                    let meetings = DB.get('meetings');
-                    const idx = meetings.findIndex(m => m.date === dateStr);
-                    const entry = {
-                        date: dateStr,
-                        type: type,
-                        content: '', notes: '', attendees: [],
-                        lastModBy: DB.currentUser.name + ' ' + DB.currentUser.surname,
-                        lastModDate: new Date().toLocaleString('sl-SI')
-                    };
-                    
-                    if (idx > -1) meetings[idx] = entry;
-                    else meetings.push(entry);
-
-                    DB.set('meetings', meetings);
-                    Modules.Diary.renderCalendar();
-                    Modal.close();
-                },
-
-                openMeetingForm: (dateStr, existing) => {
-                    // Inicializacija temp objekta
-                    Modules.Diary.tempMeeting = existing ? JSON.parse(JSON.stringify(existing)) : {
-                        date: dateStr,
-                        type: 'meeting',
-                        attendees: [],
-                        content: '',
-                        notes: ''
-                    };
-
-                    Modules.Diary.rerenderForm();
-                },
-
-                rerenderForm: () => {
-                    const tm = Modules.Diary.tempMeeting;
-                    
-                    // Render prisotnih
-                    let attHtml = '';
-                    if(!tm.attendees || tm.attendees.length === 0) attHtml = '<div class="text-center text-muted">Seznam je prazen</div>';
-                    else {
-                        tm.attendees.forEach((att, idx) => {
-                            attHtml += `
-                            <div class="attendee-row">
-                                <span class="attendee-name" onclick="Modules.Diary.removeAttendee(${idx})">${att.name}</span>
-                                <div class="flex">
-                                    ${att.note ? '<small>📝</small>' : ''}
-                                    <span class="attendee-note-btn" onclick="Modules.Diary.addNoteToAttendee(${idx})">✏️</span>
-                                </div>
-                            </div>`;
-                        });
-                    }
-
-                    const lastMod = tm.lastModBy ? `<small>Zadnja sprememba: ${tm.lastModBy} (${tm.lastModDate})</small>` : '';
-
-                    const html = `
-                        <div>
-                            <p class="text-center bold" style="margin-bottom:10px;">Datum: ${tm.date}</p>
-                            
-                            <label class="bold">Prisotni:</label>
-                            <div class="attendees-list" id="att-list-container">${attHtml}</div>
-                            
-                            <label class="bold">Vsebina srečanja:</label>
-                            <textarea id="meet-content" rows="3">${tm.content || ''}</textarea>
-                            
-                            <label class="bold">Opombe:</label>
-                            <textarea id="meet-notes" rows="2">${tm.notes || ''}</textarea>
-                            
-                            <div class="mt-2 text-center text-muted">${lastMod}</div>
-                        </div>
+                while (d <= end) {
+                    if (d.getDay() === 5) { // Friday
+                        const dateStr = d.toISOString().split('T')[0]; // YYYY-MM-DD
+                        const displayDate = `${d.getDate()}.${d.getMonth()+1}.`;
                         
-                        <div class="flex space-between mt-2" style="border-top:1px solid #eee; padding-top:10px;">
-                            <button class="btn-secondary" onclick="Modal.close()">Zapri</button>
-                            <button class="btn-primary" onclick="Modules.Diary.showMemberPicker()">+ Člani</button>
-                            <button class="btn-success" onclick="Modules.Diary.saveMeeting()">Shrani</button>
-                        </div>
-                    `;
-                    
-                    // Prikažemo modal, a brez spodnjih gumbov (ker so v HTMLju zgoraj)
-                    Modal.show('Zabeleži srečanje', html, []);
+                        const cell = document.createElement('div');
+                        cell.className = 'cal-cell';
+                        cell.innerText = displayDate;
+                        
+                        // Check status
+                        if (this.data.meetings[dateStr]) {
+                            const m = this.data.meetings[dateStr];
+                            if (m.type === 'cancelled') cell.classList.add('status-cancelled');
+                            if (m.type === 'holiday') cell.classList.add('status-holiday');
+                            if (m.type === 'meeting') cell.classList.add('status-ok');
+                        }
 
-                    // Bindamo inpute, da se stanje ohrani
-                    setTimeout(() => {
-                        const cBox = $('meet-content');
-                        const nBox = $('meet-notes');
-                        if(cBox) cBox.oninput = (e) => Modules.Diary.tempMeeting.content = e.target.value;
-                        if(nBox) nBox.oninput = (e) => Modules.Diary.tempMeeting.notes = e.target.value;
-                    }, 100);
-                },
-
-                showMemberPicker: () => {
-                    const members = DB.get('members');
-                    if (members.length === 0) return Modal.alert('Ni članov v bazi.');
-                    
-                    let opts = members.map(m => `<option value="${m.id}">${m.name} ${m.surname}</option>`).join('');
-                    const html = `<select id="member-select" style="font-size:16px;">${opts}</select>`;
-                    
-                    Modal.show('Izberi člana', html, [
-                        { 
-                            text: 'Dodaj', 
-                            onClick: () => {
-                                const id = $('member-select').value;
-                                const m = members.find(x => x.id == id);
-                                // Prepreči duplikate
-                                if(!Modules.Diary.tempMeeting.attendees.find(x => x.memberId === id)) {
-                                    Modules.Diary.tempMeeting.attendees.push({
-                                        memberId: m.id,
-                                        name: `${m.name} ${m.surname}`,
-                                        note: ''
-                                    });
-                                }
-                                Modules.Diary.rerenderForm(); // Nazaj na glavni form
-                            }
-                        },
-                        { text: 'Prekliči', style: 'btn-secondary', onClick: () => Modules.Diary.rerenderForm() }
-                    ]);
-                },
-
-                removeAttendee: (idx) => {
-                    Modules.Diary.tempMeeting.attendees.splice(idx, 1);
-                    Modules.Diary.rerenderForm();
-                },
-
-                addNoteToAttendee: (idx) => {
-                    Modal.prompt('Opomba za člana', 'Vpiši opombo...', (val) => {
-                        Modules.Diary.tempMeeting.attendees[idx].note = val;
-                        Modules.Diary.rerenderForm();
-                    });
-                },
-
-                saveMeeting: () => {
-                    let meetings = DB.get('meetings');
-                    const tm = Modules.Diary.tempMeeting;
-                    
-                    // Metadata update
-                    tm.lastModBy = DB.currentUser.name + ' ' + DB.currentUser.surname;
-                    tm.lastModDate = new Date().toLocaleString('sl-SI');
-                    tm.type = 'meeting'; // Zagotovi da je tip meeting, da bo zelena barva
-
-                    const idx = meetings.findIndex(m => m.date === tm.date);
-                    if (idx > -1) meetings[idx] = tm;
-                    else meetings.push(tm);
-
-                    DB.set('meetings', meetings);
-                    Modules.Diary.renderCalendar(); // To bo pobarvalo celico na zeleno
-                    Modal.close();
+                        cell.onclick = () => this.handleDateClick(dateStr);
+                        grid.appendChild(cell);
+                    }
+                    d.setDate(d.getDate() + 1);
                 }
             },
 
-            Archive: {
-                render: () => {
-                    const term = $('search-archive') ? $('search-archive').value.toLowerCase() : '';
-                    const meetings = DB.get('meetings').filter(m => m.type === 'meeting');
-                    const filtered = meetings.filter(m => m.date.includes(term));
-                    
-                    let html = '';
-                    filtered.forEach(m => {
-                        const count = m.attendees ? m.attendees.length : 0;
-                        html += `
-                        <div class="list-item archived" onclick="Modules.Diary.openMeetingForm('${m.date}', ${JSON.stringify(m).replace(/"/g, '&quot;')})">
-                            <div>
-                                <strong>${m.date}</strong><br>
-                                <small>${m.content.substring(0, 30)}...</small>
-                            </div>
-                            <div class="text-center">
-                                <strong>${count}</strong><br><small>prisotnih</small>
-                            </div>
-                        </div>`;
-                    });
-                    $('archive-list').innerHTML = html || '<p class="text-center">Ni zadetkov.</p>';
+            handleDateClick: function(dateStr) {
+                this.temp.selectedDate = dateStr;
+                document.getElementById('action-date-display').innerText = dateStr.split('-').reverse().join('.');
+                document.getElementById('action-modal').classList.remove('hidden');
+            },
+
+            setStatus: function(type) {
+                const date = this.temp.selectedDate;
+                
+                if (type === 'cancelled' || type === 'holiday') {
+                    this.data.meetings[date] = { type: type };
+                    this.saveData('meetings');
+                    this.renderCalendar();
+                    document.getElementById('action-modal').classList.add('hidden');
                 }
+            },
+
+            openMeetingModal: function() {
+                document.getElementById('action-modal').classList.add('hidden');
+                const date = this.temp.selectedDate;
+                document.getElementById('meeting-modal').classList.remove('hidden');
+                document.getElementById('meet-date-display').innerText = date.split('-').reverse().join('.');
+
+                // Init Draft
+                if (this.data.meetings[date] && this.data.meetings[date].type === 'meeting') {
+                    // Deep copy existing
+                    this.temp.meetingDraft = JSON.parse(JSON.stringify(this.data.meetings[date]));
+                } else {
+                    this.temp.meetingDraft = {
+                        type: 'meeting',
+                        content: '',
+                        notes: '',
+                        attendance: [],
+                        lastUser: '',
+                        lastTs: ''
+                    };
+                }
+                this.renderMeetingDraft();
+            },
+
+            renderMeetingDraft: function() {
+                const draft = this.temp.meetingDraft;
+                document.getElementById('meet-content').value = draft.content || '';
+                document.getElementById('meet-notes').value = draft.notes || '';
+                document.getElementById('meet-last-user').innerText = draft.lastUser || '-';
+                document.getElementById('meet-last-ts').innerText = draft.lastTs || '-';
+
+                const attBox = document.getElementById('attendance-box');
+                attBox.innerHTML = '';
+                
+                if (!draft.attendance || draft.attendance.length === 0) {
+                    attBox.innerHTML = '<div style="text-align:center; color:#999; font-style:italic;">Ni prisotnih</div>';
+                } else {
+                    draft.attendance.forEach((p, idx) => {
+                        const row = document.createElement('div');
+                        row.className = 'att-item';
+                        row.innerHTML = `
+                            <div>
+                                <span class="att-name" onclick="app.removeDraftMember(${idx})">${p.name}</span>
+                                ${p.note ? `<br><small style="color:#666">(${p.note})</small>` : ''}
+                            </div>
+                            <span class="att-note-icon" onclick="app.addDraftNote(${idx})">✎</span>
+                        `;
+                        attBox.appendChild(row);
+                    });
+                }
+            },
+
+            openAddMemberPicker: function() {
+                document.getElementById('picker-modal').classList.remove('hidden');
+                this.renderMemberPicker();
+            },
+
+            renderMemberPicker: function(search = '') {
+                const list = document.getElementById('picker-list');
+                list.innerHTML = '';
+                const filtered = this.data.members.filter(m => 
+                    (m.fname + ' ' + m.lname).toLowerCase().includes(search.toLowerCase())
+                );
+                
+                filtered.forEach(m => {
+                    // Check if already in draft
+                    const exists = this.temp.meetingDraft.attendance.find(x => x.id === m.id);
+                    if (!exists) {
+                        const div = document.createElement('div');
+                        div.style.padding = "10px";
+                        div.style.borderBottom = "1px solid #eee";
+                        div.style.cursor = "pointer";
+                        div.innerText = `${m.fname} ${m.lname}`;
+                        div.onclick = () => {
+                            this.temp.meetingDraft.attendance.push({
+                                id: m.id,
+                                name: m.fname + ' ' + m.lname,
+                                note: ''
+                            });
+                            this.renderMeetingDraft();
+                            document.getElementById('picker-modal').classList.add('hidden');
+                        };
+                        list.appendChild(div);
+                    }
+                });
+            },
+
+            removeDraftMember: function(idx) {
+                // "Just clicks name and it disappears"
+                this.temp.meetingDraft.attendance.splice(idx, 1);
+                this.renderMeetingDraft();
+            },
+
+            addDraftNote: function(idx) {
+                this.customAlert("Opomba", "Vpiši opombo za člana:", true, (val) => {
+                    this.temp.meetingDraft.attendance[idx].note = val;
+                    this.renderMeetingDraft();
+                });
+            },
+
+            saveMeeting: function() {
+                const date = this.temp.selectedDate;
+                this.temp.meetingDraft.content = document.getElementById('meet-content').value;
+                this.temp.meetingDraft.notes = document.getElementById('meet-notes').value;
+                this.temp.meetingDraft.lastUser = this.currentUser.fname + " " + this.currentUser.lname;
+                
+                const now = new Date();
+                this.temp.meetingDraft.lastTs = `${now.getDate()}.${now.getMonth()+1}.${now.getFullYear()}`;
+
+                this.data.meetings[date] = this.temp.meetingDraft;
+                this.saveData('meetings');
+                
+                document.getElementById('meeting-modal').classList.add('hidden');
+                this.renderCalendar();
+            },
+            
+            closeMeetingModal: function() {
+                 document.getElementById('meeting-modal').classList.add('hidden');
+            },
+
+            // --- ARHIV ---
+            renderArchive: function() {
+                const list = document.getElementById('archive-list');
+                const filter = document.getElementById('archive-filter').value; // YYYY-MM
+                
+                list.innerHTML = '';
+
+                // Get all meetings that are Type 'meeting'
+                let entries = Object.entries(this.data.meetings)
+                    .filter(([date, m]) => m.type === 'meeting');
+                
+                // Sort by date desc
+                entries.sort((a, b) => new Date(b[0]) - new Date(a[0]));
+
+                if (filter) {
+                    entries = entries.filter(([date, m]) => date.startsWith(filter));
+                }
+
+                if (entries.length === 0) {
+                    list.innerHTML = '<p style="text-align:center; color:#888;">Ni zapisov.</p>';
+                    return;
+                }
+
+                entries.forEach(([date, m]) => {
+                    const count = m.attendance ? m.attendance.length : 0;
+                    const div = document.createElement('div');
+                    div.className = 'menu-item'; // reuse style
+                    div.style.textAlign = 'left';
+                    div.style.marginBottom = '15px';
+                    div.innerHTML = `
+                        <div style="font-size:0.9rem; color:#888;">${date}</div>
+                        <h3>${count} Prisotnih</h3>
+                        <p>${m.content ? m.content.substring(0, 50) + '...' : 'Brez vsebine'}</p>
+                        <button class="btn btn-outline" style="width:auto; padding:5px 15px;" onclick="app.editFromArchive('${date}')">Odpri / Uredi</button>
+                    `;
+                    list.appendChild(div);
+                });
+            },
+
+            editFromArchive: function(date) {
+                this.temp.selectedDate = date;
+                document.getElementById('meeting-modal').classList.remove('hidden');
+                document.getElementById('meet-date-display').innerText = date;
+                this.temp.meetingDraft = JSON.parse(JSON.stringify(this.data.meetings[date]));
+                this.renderMeetingDraft();
             }
         };
 
-        window.onload = App.init;
+        // Zagon
+        window.onload = function() {
+            app.init();
+        };
     </script>
 </body>
 </html>
